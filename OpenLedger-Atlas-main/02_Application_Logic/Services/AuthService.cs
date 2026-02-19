@@ -1,0 +1,52 @@
+using Microsoft.EntityFrameworkCore;
+using OpenLedgerAtlas.Domain.Entities;
+using OpenLedgerAtlas.Infrastructure.Data;
+
+namespace OpenLedgerAtlas.Application.Services
+{
+    public class AuthService
+    {
+        private readonly OpenLedgerDbContext _db;
+
+        public AuthService(OpenLedgerDbContext db)
+        {
+            _db = db;
+        }
+
+        public async Task<User> Register(string email, string password)
+        {
+            var hash = BCrypt.Net.BCrypt.HashPassword(password);
+
+            var user = new User
+            {
+                Email = email,
+                PasswordHash = hash
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+
+            var account = new Account(user.Id);
+            account.Credit(1000m);
+
+            _db.Accounts.Add(account);
+            await _db.SaveChangesAsync();
+
+            return user;
+        }
+
+        public async Task<User?> Validate(string email, string password)
+        {
+            var user = await _db.Users
+                .FirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null)
+                return null;
+
+            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                return null;
+
+            return user;
+        }
+    }
+}

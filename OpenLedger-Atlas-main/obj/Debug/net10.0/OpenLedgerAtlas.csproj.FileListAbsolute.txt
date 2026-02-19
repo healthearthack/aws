@@ -1,0 +1,7 @@
+C:\Users\Owner\healthearth\OpenLedger-Atlas-main\obj\Debug\net10.0\OpenLedgerAtlas.csproj.AssemblyReference.cache
+C:\Users\Owner\healthearth\OpenLedger-Atlas-main\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\Owner\healthearth\OpenLedger-Atlas-main\obj\Debug\net10.0\OpenLedgerAtlas.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Owner\healthearth\OpenLedger-Atlas-main\obj\Debug\net10.0\OpenLedgerAtlas.AssemblyInfoInputs.cache
+C:\Users\Owner\healthearth\OpenLedger-Atlas-main\obj\Debug\net10.0\OpenLedgerAtlas.AssemblyInfo.cs
+C:\Users\Owner\healthearth\OpenLedger-Atlas-main\obj\Debug\net10.0\OpenLedgerAtlas.csproj.CoreCompileInputs.cache
+C:\Users\Owner\healthearth\OpenLedger-Atlas-main\obj\Debug\net10.0\OpenLedgerAtlas.MvcApplicationPartsAssemblyInfo.cache

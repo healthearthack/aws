@@ -1,0 +1,215 @@
+/* =========================
+   MAIN FAIRY
+========================= */
+
+.fairy {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  z-index: 9999;
+  animation: hover-wiggle 3s ease-in-out infinite;
+  pointer-events: auto;
+}
+
+/* =========================
+   CHAT CONTAINER
+========================= */
+
+.fairy-chat {
+  position: fixed;
+
+  bottom: 40px;
+  right: 40px;
+
+  width: 360px;
+  height: 480px;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(15,15,20,0.98);
+  backdrop-filter: blur(14px);
+
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow: 0 25px 70px rgba(0,0,0,0.55);
+
+  z-index: 9998;
+
+  padding: 0;
+  overflow: hidden;
+}
+
+/* =========================
+   MESSAGE LOG
+========================= */
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+/* Scrollbar (subtle) */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+}
+
+/* =========================
+   MESSAGE BUBBLES
+========================= */
+
+.msg {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+  flex-shrink: 0;
+}
+
+.msg.user {
+  align-self: flex-end;
+  background: #7c3aed;
+  color: white;
+}
+
+.msg.fairy {
+  align-self: flex-start;
+  background: #2a2a2a;
+  color: white;
+}
+
+/* =========================
+   INPUT AREA
+========================= */
+
+.chat-input {
+  flex-shrink: 0;
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  background: #141414;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.chat-input input {
+  flex: 1;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #0f0f0f;
+  color: white;
+  outline: none;
+  font-size: 13px;
+}
+
+.chat-input input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+.chat-input button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: white;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.chat-input button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4), 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.chat-input button:active {
+  transform: translateY(0);
+}
+
+/* =========================
+   FAIRY VISUALS
+========================= */
+
+.fairy:hover .fairy-core {
+  transform: scale(1.2);
+  transition: transform 0.2s ease;
+}
+
+.fairy-core {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  box-shadow:
+    0 0 18px 10px rgba(255, 255, 255, 0.95),
+    0 0 30px 18px rgba(255, 200, 255, 0.9),
+    0 0 45px 25px rgba(255, 150, 255, 0.8);
+  pointer-events: none;
+}
+
+.fairy-glow {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0));
+  border-radius: 50%;
+  filter: blur(12px);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.fairy-sparkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.9;
+  animation: sparkle 1.2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+/* =========================
+   TRAIL
+========================= */
+
+.fairy-trail {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.8;
+  animation: trailFade 0.8s ease-out forwards;
+  box-shadow: 0 0 12px 6px rgba(255,255,255,0.8);
+  z-index: 999999 !important;
+}
+
+@keyframes trailFade {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(0.2); opacity: 0; }
+}

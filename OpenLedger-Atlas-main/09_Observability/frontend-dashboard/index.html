@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenLedgerAtlas – Internal Metrics</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>OpenLedgerAtlas – Internal Metrics Dashboard</h1>
+        <button id="refreshBtn">Refresh</button>
+    </header>
+
+    <section id="metrics">
+        <div class="metric">
+            <h2>Transactions Today</h2>
+            <p id="txCount">0</p>
+        </div>
+        <div class="metric">
+            <h2>Fraud Alerts</h2>
+            <p id="fraudCount">0</p>
+        </div>
+        <div class="metric">
+            <h2>Active Accounts</h2>
+            <p id="accountCount">0</p>
+        </div>
+        <div class="metric">
+            <h2>Settlement Queue</h2>
+            <p id="settlementCount">0</p>
+        </div>
+        <div class="metric">
+            <h2>GitHub Stars</h2>
+            <p id="stars">–</p>
+        </div>
+        <div class="metric">
+            <h2>Forks</h2>
+            <p id="forks">–</p>
+        </div>
+        <div class="metric">
+            <h2>Open Issues</h2>
+            <p id="issues">–</p>
+        </div>
+        <div class="metric">
+            <h2>Watchers</h2>
+            <p id="watchers">–</p>
+        </div>
+    </section>
+
+    <section id="chart">
+        <h2>Transactions Per Minute</h2>
+        <div id="chartPlaceholder">[Chart Placeholder]</div>
+    </section>
+
+    <section id="logs">
+        <h2>Recent Events</h2>
+        <div id="logStream"></div>
+    </section>
+
+    <footer>
+        <p id="timestamp">Last updated: never</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
