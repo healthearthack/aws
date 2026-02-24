@@ -1,4 +1,4 @@
-name: Deploy Pipeline
+name: My Design System Deploy Pipeline
 
 on:
   push:
@@ -10,15 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Validate tokens.json
+      - name: Validate tokens
         run: |
-          echo "Validating design tokens..."
           python3 -m json.tool "My Design System/Full color token system/tokens.json"
-          echo "Tokens valid ✅"
+          echo "Tokens valid"
 
-      - name: Show enterprise structure
+      - name: Show structure
         run: |
-          echo "Enterprise folders:"
           ls enterprises/
-          echo "Design system:"
           ls "My Design System/"
