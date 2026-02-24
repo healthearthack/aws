@@ -5,22 +5,20 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Install CDK
+      - name: Validate Design System
         run: |
-          npm install -g aws-cdk
-          pip install aws-cdk-lib constructs
+          echo "Checking tokens.json..."
+          python3 -m json.tool "My Design System/Full color token system/tokens.json"
+          echo "Design system valid ✅"
 
-      - name: Deploy
-        run: cdk deploy --require-approval never
+      - name: Confirm Enterprise Structure
+        run: |
+          echo "Enterprise folders:"
+          ls enterprises/
+          echo "Design system folders:"
+          ls "My Design System/"r
