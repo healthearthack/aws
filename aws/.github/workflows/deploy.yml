@@ -1,4 +1,4 @@
-name: My Design System Deploy Pipeline
+name: M.)d(a¢k° Deploy Pipeline
 
 on:
   push:
@@ -19,3 +19,4 @@ jobs:
         run: |
           ls enterprises/
           ls "My Design System/"
+          ls "My Design System/components/"
