@@ -1,0 +1,18 @@
+name: Validate Tokens
+
+on:
+  push:
+    paths:
+      - 'My Design System/Full color token system/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Validate tokens.json
+        run: |
+          echo "Validating tokens.json..."
+          python3 -m json.tool "My Design System/Full color token system/tokens.json"
+          echo "Tokens valid"

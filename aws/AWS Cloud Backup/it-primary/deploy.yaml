@@ -1,0 +1,37 @@
+name: Deploy Production Cloud Backup
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'AWS Cloud Backup/it-primary/**'
+
+permissions:
+  id-token: write # REQUIRED for OIDC
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }} # The Role created in IAM for GHA
+          aws-region: us-east-1
+
+      - name: Package Lambda
+        run: |
+          cd "AWS Cloud Backup/it-primary"
+          zip -r function.zip index.js
+          aws s3 cp function.zip s3://metak-build-artifacts-${{ secrets.AWS_ACCOUNT_ID }}/it-primary/metak-prod-stack.zip
+
+      - name: Deploy CloudFormation Stack
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: metak-prod-it-primary
+          template: AWS Cloud Backup/it-primary/template.yaml
+          parameter-overrides: "Environment=prod"
+          capabilities: CAPABILITY_NAMED_IAM

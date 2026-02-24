@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Metaknews Production OS
+
+Resources:
+  # The Database
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: metak-prod-products
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  # The Logic + API Gateway
+  MetakPrimaryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: metak-prod-it-primary
+      Handler: index.handler
+      Runtime: nodejs18.x
+      CodeUri: .
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /news
+            Method: get

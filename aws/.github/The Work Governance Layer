@@ -1,0 +1,22 @@
+Who? Creator, CEOs, startups
+What? Enterprise design system and early startup structure in the cloud
+When? Independent contractor since 2022, registered LLC 2023. Salesforce 2024-present, github 2025-present
+Where? Remote with travel as needed or requested 
+Why? Companies are finding functionality, performance, and fiscally impressive cost savings by migrating to a cloud infrastructure
+How? Hiring the creator
+
+Mission : Provide white glove HR/IT structure and reliability as a HR and techncical expert 
+Vision : Implement an adoptable company documentation structure that is repeatable and customizable to any enterprise
+Core Values : Logical, dependable, trust that you can afford
+
+<organization>-<application>-<environment>-<component>-<random-suffix>
+
+lyft-transportation_app-prod-api-a1b2c3d4
+lyft-transportation_app-dev-database-x9y8z7w6
+lyft-transportation_app-storage-m5n4p3q2
+
+
+acme-ecommerce-prod-api-a1b2c3d4
+acme-ecommerce-dev-database-x9y8z7w6
+acme-ecommerce-staging-storage-m5n4p3q2
+

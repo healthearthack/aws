@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Metaknews Production Engine - it-primary'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, prod]
+
+Resources:
+  # ATOMIC: The IT Service Execution Role (Strict Scoped)
+  MetakLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'metak-${Environment}-lambda-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBSpecificAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                Resource: !GetAtt ProductsTable.Arn
+
+  # MOLECULE: Production Database (Encryption + On-Demand Scaling)
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'metak-${Environment}-products'
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true # PRODUCTION MUST: Encryption at rest
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  # MOLECULE: The Functional Logic
+  MetakPrimaryLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'metak-${Environment}-it-primary'
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Role: !GetAtt MetakLambdaExecutionRole.Arn
+      MemorySize: 512 # Optimized for production performance
+      Timeout: 10
+      Code:
+        S3Bucket: !Sub 'metak-build-artifacts-${AWS::AccountId}' # This assumes your GHA uploads here
+        S3Key: !Sub 'it-primary/${AWS::StackName}.zip'
+
+Outputs:
+  ApiEndpoint:
+    Description: "ID of the DynamoDB Table"
+    Value: !Ref ProductsTable
