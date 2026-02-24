@@ -1,0 +1,18 @@
+:root {
+  --cds-interactive:    #7864ff;
+  --cds-interactive-01: #7864ff;
+  --cds-interactive-02: #ff6b9d;
+  --cds-interactive-03: #00f5c4;
+  --cds-ui-background:  #080810;
+  --cds-ui-01:          #0f0f1a;
+  --cds-ui-02:          #1a1a2e;
+  --cds-text-01:        #f0eeff;
+  --cds-text-02:        #9990cc;
+  --cds-text-03:        #5a5580;
+  --cds-font-family-sans: 'DM Mono', monospace;
+  --cds-productive-heading-01-font-family: 'Syne', sans-serif;
+  --lyft-primary:   #FF00BF;
+  --cigna-primary:  #006DB7;
+  --schwab-primary: #00A0DC;
+  --mdack-primary:  #7864ff;
+}
