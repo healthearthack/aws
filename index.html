@@ -1,39 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthEarthHack | AI System Audit</title>
-    <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: #eee; padding: 2rem; }
-        .card { background: #2a2a2a; border-radius: 8px; padding: 20px; border-left: 5px solid #4CAF50; margin-bottom: 10px; }
-        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        h1 { color: #00ffcc; }
-        .timestamp { color: #888; font-size: 0.8rem; }
-    </style>
-</head>
+<html>
 <body>
-    <h1>🛰️ AI Improvement Loop: Real-Time Audit</h1>
-    <p class="timestamp">System Last Scanned: {{LAST_RUN}}</p>
-
-    <div class="status-grid">
-        <div class="card">
-            <h3>🔒 Security Audit</h3>
-            <p>{{SEC_AUDIT}}</p>
-        </div>
-        <div class="card">
-            <h3>🤝 HR & Inclusivity</h3>
-            <p>{{HR_AUDIT}}</p>
-        </div>
-        <div class="card">
-            <h3>⚖️ Legal Framework</h3>
-            <p>{{LEGAL_AUDIT}}</p>
-        </div>
-    </div>
-
-    <div class="card" style="border-color: #00bcff;">
-        <h3>🚀 Production Build</h3>
-        <p>File: <code>tokens.min.json</code> is ready for AWS deployment.</p>
-    </div>
+    <h1>Heal The Art: System Health</h1>
+    <p>Security: {{SEC_AUDIT}}</p>
+    <p>HR Audit: {{HR_AUDIT}}</p>
+    <p>Legal Status: {{LEGAL_AUDIT}}</p>
+    <p>Last Update: {{LAST_RUN}}</p>
 </body>
 </html>
