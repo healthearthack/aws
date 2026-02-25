@@ -1,86 +1,73 @@
-name: ♾️ AI Token Improvement Loop
+name: ♾️ Deep Audit & Improvement Loop
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Allows manual triggering for a "System Health Check"
 
 jobs:
-  optimize-and-audit:
+  audit-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Essential: Allows the AI bot to push fixes back to the repo
+      contents: write
 
     steps:
-      - name: 🛰️ Step 1: Initialize Environment
+      - name: 🛰️ Step 1: Initialize
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Pulls full history for the audit trail
 
-      - name: 🐍 Step 2: Set up Python Engine
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: 🤖 Step 3: Execute AI-Audit & Healing
+      - name: 🔒 Step 2: Security Audit
+        id: security_audit
         run: |
-          python -c "
-          import json, os, glob
-          
-          # ARCHITECTURE: DYNAMIC PATH FINDING
-          # We use glob to find the file regardless of folder names or spaces.
-          # The '**' searches recursively through all subdirectories.
-          files = glob.glob('**/tokens.json', recursive=True)
-          
-          if not files:
-              print('❌ CRITICAL: tokens.json not found in the repository.')
-              exit(1)
-          
-          path = files[0]
-          print(f'✅ AI Target identified: {path}')
+          # Check for high-risk patterns like AWS keys or generic API tokens
+          if grep -qE "AKIA[0-9A-Z]{16}|[a-zA-Z0-9+/]{40}" tokens.json; then
+            echo "RESULT=❌ FAILED: Potential Secret Detected!" >> $GITHUB_ENV
+          else
+            echo "RESULT=✅ PASSED: No Secrets Found." >> $GITHUB_ENV
+          fi
 
-          with open(path, 'r') as f:
-              data = json.load(f)
+      - name: 🤝 Step 3: HR & Inclusivity Audit
+        id: hr_audit
+        run: |
+          # Scanning for non-inclusive terms
+          BAD_WORDS="master|slave|blacklist|whitelist"
+          if grep -qiE "$BAD_WORDS" tokens.json; then
+            echo "HR_RESULT=⚠️ WARNING: Non-inclusive terms detected." >> $GITHUB_ENV
+          else
+            echo "HR_RESULT=✅ PASSED: Content is inclusive." >> $GITHUB_ENV
+          fi
+
+      - name: ⚖️ Step 4: Legal Framework Audit
+        id: legal_audit
+        run: |
+          # Checks for a License declaration in the root
+          if [ -f "LICENSE" ]; then
+            echo "LEGAL_RESULT=✅ PASSED: License file present." >> $GITHUB_ENV
+          else
+            echo "LEGAL_RESULT=❌ FAILED: Missing Legal License!" >> $GITHUB_ENV
+          fi
+
+      - name: 🖥️ Step 5: Real-Time Dashboard Update
+        run: |
+          # This script "Heals" the index.html by injecting the audit results
+          python -c "
+          import os
+          html_path = 'index.html'
+          with open(html_path, 'r') as f:
+              content = f.read()
           
-          # ARCHITECTURE: THE HEALING LOGIC
-          # This function crawls your JSON and standardizes data (e.g., Hex codes to Uppercase)
-          def auto_heal(obj):
-              if isinstance(obj, dict):
-                  return {k: auto_heal(v) for k, v in obj.items()}
-              elif isinstance(obj, list):
-                  return [auto_heal(i) for i in obj]
-              elif isinstance(obj, str) and obj.startswith('#'):
-                  return obj.upper() # Ensures #ffffff becomes #FFFFFF
-              return obj
+          # Replace placeholders in your index.html with real-time data
+          content = content.replace('{{SEC_AUDIT}}', os.getenv('RESULT'))
+          content = content.replace('{{HR_AUDIT}}', os.getenv('HR_RESULT'))
+          content = content.replace('{{LEGAL_AUDIT}}', os.getenv('LEGAL_RESULT'))
+          content = content.replace('{{LAST_RUN}}', '$(date)')
           
-          improved_data = auto_heal(data)
-          
-          # ARCHITECTURE: CLEAN RE-WRITING
-          # Saves the 'healed' version back to the original file with clean indentation
-          with open(path, 'w') as f:
-              json.dump(improved_data, f, indent=2)
+          with open(html_path, 'w') as f:
+              f.write(content)
           "
 
-      - name: ⚡ Step 4: Speed Optimization (Minify)
+      - name: 🔄 Step 6: Deploy & Close Loop
         run: |
-          # Finds the path again for the shell environment
-          TARGET_FILE=$(find . -iname "tokens.json" | head -n 1)
-          # Creates a production-ready 'tokens.min.json' at the ROOT of the repo
-          python -c "import json; data = json.load(open('$TARGET_FILE')); json.dump(data, open('tokens.min.json', 'w'), separators=(',', ':'))"
-
-      - name: 🔄 Step 5: Close the Loop (Self-Commit)
-        run: |
-          # This is the 'Forever Loop' mechanism. 
-          # It detects if the AI made any changes and pushes them back automatically.
-          git config --global user.name 'Design-System-AI'
+          git config --global user.name 'AI-Auditor'
           git config --global user.email 'actions@github.com'
-          git add .
-          
-          # Only commit if there are actual improvements detected
-          if git diff --staged --quiet; then
-            echo '✨ No improvements needed. System is healthy.'
-          else
-            git commit -m '🤖 AI-System: Healed formatting & updated production build'
-            git push
-            echo '🚀 Improvements pushed to repository.'
-          fi
+          git add index.html
+          git commit -m '🤖 AI Dashboard Update: Syncing Real-Time Audit Results' || echo 'No changes'
+          git push
