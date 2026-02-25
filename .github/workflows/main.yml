@@ -1,6 +1,5 @@
-name: Validate Design Tokens
+name: Validate and Minify Design Tokens
 
-# 1. When should this run?
 on:
   push:
     branches: [ main ]
@@ -12,17 +11,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 2. Get your code from GitHub onto the runner
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 3. Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      # 4. Run the JSON tool (Handling those tricky spaces)
+      # Step 1: Check if the JSON is valid (Human Readable)
       - name: Validate JSON Formatting
         run: |
           python -m json.tool "My Design System/Full color token system/tokens.json"
+
+      # Step 2: Create a tiny version (Minified)
+      - name: Minify JSON
+        run: |
+          python -c "import json; \
+          data = json.load(open('My Design System/Full color token system/tokens.json')); \
+          json.dump(data, open('My Design System/Full color token system/tokens.min.json', 'w'), separators=(',', ':'))"
+
+      # Step 3: Upload the small file so you can download it
+      - name: Upload Minified Tokens
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-tokens-minified
+          path: "My Design System/Full color token system/tokens.min.json"
