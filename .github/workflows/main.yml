@@ -13,49 +13,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🛰️ Step 1: Checkout Repository
+      - name: 🛰️ Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🐍 Step 2: Set up Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 🔍 Step 3: Find, Validate & Audit
+      - name: 🔍 Find, Validate & Audit tokens.json
         run: |
-          TARGET_FILE=$(find . -iname "tokens.json" | head -n 1)
-          if [ -z "$TARGET_FILE" ]; then echo "❌ tokens.json not found"; exit 1; fi
+          FINAL_PATH="aws/My Design System/Full color token system/tokens.json"
+          if [ ! -f "$FINAL_PATH" ]; then echo "tokens.json not found at $FINAL_PATH"; exit 1; fi
 
-          python -m json.tool "$TARGET_FILE"
+          python -m json.tool "$FINAL_PATH"
 
-          if grep -qE "AKIA[0-9A-Z]{16}" "$TARGET_FILE"; then SEC="FAIL"; else SEC="OK"; fi
-          if grep -qiE "master|slave" "$TARGET_FILE"; then HR="WARN"; else HR="OK"; fi
-          [ -f "LICENSE" ] && LEG="OK" || LEG="FAIL"
+          if grep -qE "AKIA[0-9A-Z]{16}" "$FINAL_PATH"; then SEC_RES="FAIL"; else SEC_RES="OK"; fi
+          if grep -qiE "master|slave" "$FINAL_PATH"; then HR_RES="WARN"; else HR_RES="OK"; fi
+          [ -f "LICENSE" ] && LEG_RES="OK" || LEG_RES="FAIL"
 
-          echo "SEC_RES=$SEC" >> $GITHUB_ENV
-          echo "HR_RES=$HR" >> $GITHUB_ENV
-          echo "LEG_RES=$LEG" >> $GITHUB_ENV
-          echo "FINAL_PATH=$TARGET_FILE" >> $GITHUB_ENV
+          echo "SEC_RES=$SEC_RES" >> $GITHUB_ENV
+          echo "HR_RES=$HR_RES" >> $GITHUB_ENV
+          echo "LEG_RES=$LEG_RES" >> $GITHUB_ENV
+          echo "FINAL_PATH=$FINAL_PATH" >> $GITHUB_ENV
 
-      - name: 🖥️ Step 4: Update index.html Dashboard
+      - name: 🖥️ Update index.html Dashboard
         run: |
           sed -i "s/{{SEC_AUDIT}}/${SEC_RES}/g" index.html
           sed -i "s/{{HR_AUDIT}}/${HR_RES}/g" index.html
           sed -i "s/{{LEGAL_AUDIT}}/${LEG_RES}/g" index.html
           sed -i "s/{{LAST_RUN}}/$(date '+%Y-%m-%d %H:%M:%S')/g" index.html
 
-      - name: 🔐 Step 5: AWS Authentication (OIDC)
+      - name: 🔐 AWS Authentication (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::249746593588:role/DesignSystemStack-CustomS3AutoDeleteObjectsCustomRe-wK8fy5Wb6uJl
           aws-region: us-east-1
           audience: sts.amazonaws.com
 
-      - name: 🚀 Step 6: Minify & Sync to S3
+      - name: 🚀 Minify & Sync to S3
         run: |
           python - <<EOF
-import json
-data=json.load(open("${FINAL_PATH}"))
+import json, os
+path = os.environ["FINAL_PATH"]
+data = json.load(open(path))
 json.dump(data, open("tokens.min.json","w"), separators=(",",":"))
 EOF
 
@@ -64,16 +65,17 @@ EOF
           aws s3 cp "${FINAL_PATH}" s3://$BUCKET/tokens.json
           aws s3 cp tokens.min.json s3://$BUCKET/tokens.min.json
           aws s3 cp index.html s3://$BUCKET/index.html
+          aws s3 cp magic2u-design-system-showcase.html s3://$BUCKET/magic2u-design-system-showcase.html
 
-      - name: 🔄 Step 7: Commit Dashboard Update (only if changed)
-        run: |
-          git config --global user.name 'AI-Auditor'
-          git config --global user.email 'actions@github.com'
-
-          git add index.html
-          if ! git diff --cached --quiet; then
-            git commit -m '🤖 AI Dashboard Sync: Healed Architecture'
-            git push
-          else
-            echo "No changes to commit"
-          fi
+      # Optional: re-enable this later if you really want auto-commits
+      # - name: 🔄 Commit Dashboard Update (only if changed)
+      #   run: |
+      #     git config --global user.name 'AI-Auditor'
+      #     git config --global user.email 'actions@github.com'
+      #     git add index.html
+      #     if ! git diff --cached --quiet; then
+      #       git commit -m '🤖 AI Dashboard Sync: Healed Architecture'
+      #       git push
+      #     else
+      #       echo "No changes to commit"
+      #     fi
