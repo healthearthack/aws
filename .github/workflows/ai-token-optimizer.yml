@@ -3,61 +3,84 @@ name: ♾️ AI Token Improvement Loop
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Allows you to run this manually for a "health check"
+  workflow_dispatch: # Allows manual triggering for a "System Health Check"
 
 jobs:
   optimize-and-audit:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Crucial: Gives the AI/Bot power to fix your files
+      contents: write # Essential: Allows the AI bot to push fixes back to the repo
 
     steps:
-      - name: Checkout Repository
+      - name: 🛰️ Step 1: Initialize Environment
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Gets full history for better auditing
+          fetch-depth: 0 # Pulls full history for the audit trail
 
-      - name: Set up Python
+      - name: 🐍 Step 2: Set up Python Engine
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      # STEP 1: AI-Style Auditing & Cleaning
-      # This script identifies duplicate colors, invalid hex codes, and formatting
-      - name: AI-Enhanced Self-Audit
+      - name: 🤖 Step 3: Execute AI-Audit & Healing
         run: |
           python -c "
-          import json, os
-          path = 'My Design System/Full color token system/tokens.json'
+          import json, os, glob
+          
+          # ARCHITECTURE: DYNAMIC PATH FINDING
+          # We use glob to find the file regardless of folder names or spaces.
+          # The '**' searches recursively through all subdirectories.
+          files = glob.glob('**/tokens.json', recursive=True)
+          
+          if not files:
+              print('❌ CRITICAL: tokens.json not found in the repository.')
+              exit(1)
+          
+          path = files[0]
+          print(f'✅ AI Target identified: {path}')
+
           with open(path, 'r') as f:
               data = json.load(f)
           
-          # AUTO-FIX: Ensure all hex codes are uppercase and standardized
-          def clean(obj):
+          # ARCHITECTURE: THE HEALING LOGIC
+          # This function crawls your JSON and standardizes data (e.g., Hex codes to Uppercase)
+          def auto_heal(obj):
               if isinstance(obj, dict):
-                  return {k: clean(v) for k, v in obj.items()}
+                  return {k: auto_heal(v) for k, v in obj.items()}
+              elif isinstance(obj, list):
+                  return [auto_heal(i) for i in obj]
               elif isinstance(obj, str) and obj.startswith('#'):
-                  return obj.upper()
+                  return obj.upper() # Ensures #ffffff becomes #FFFFFF
               return obj
           
-          cleaned_data = clean(data)
+          improved_data = auto_heal(data)
           
+          # ARCHITECTURE: CLEAN RE-WRITING
+          # Saves the 'healed' version back to the original file with clean indentation
           with open(path, 'w') as f:
-              json.dump(cleaned_data, f, indent=2)
+              json.dump(improved_data, f, indent=2)
           "
 
-      # STEP 2: Speed Optimization (Minification)
-      - name: Generate Production Build
+      - name: ⚡ Step 4: Speed Optimization (Minify)
         run: |
-          python -c "import json; \
-          data = json.load(open('My Design System/Full color token system/tokens.json')); \
-          json.dump(data, open('tokens.min.json', 'w'), separators=(',', ':'))"
+          # Finds the path again for the shell environment
+          TARGET_FILE=$(find . -iname "tokens.json" | head -n 1)
+          # Creates a production-ready 'tokens.min.json' at the ROOT of the repo
+          python -c "import json; data = json.load(open('$TARGET_FILE')); json.dump(data, open('tokens.min.json', 'w'), separators=(',', ':'))"
 
-      # STEP 3: The Feedback Loop (Self-Commit)
-      # This pushes the "Healed" files back to your repo automatically
-      - name: Commit & Push Improvements
+      - name: 🔄 Step 5: Close the Loop (Self-Commit)
         run: |
-          git config --global user.name "AI-Optimizer-Bot"
-          git config --global user.email "actions@github.com"
+          # This is the 'Forever Loop' mechanism. 
+          # It detects if the AI made any changes and pushes them back automatically.
+          git config --global user.name 'Design-System-AI'
+          git config --global user.email 'actions@github.com'
           git add .
-          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 AI Optimization: Cleaned tokens, improved speed, & updated root build" && git push)
+          
+          # Only commit if there are actual improvements detected
+          if git diff --staged --quiet; then
+            echo '✨ No improvements needed. System is healthy.'
+          else
+            git commit -m '🤖 AI-System: Healed formatting & updated production build'
+            git push
+            echo '🚀 Improvements pushed to repository.'
+          fi
