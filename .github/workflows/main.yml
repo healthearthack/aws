@@ -1,4 +1,4 @@
-name: Validate and Minify Design Tokens
+name: ♾️ Heal The Art: AI Audit & AWS Push
 
 on:
   push:
@@ -7,33 +7,54 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    # This block is MANDATORY for AWS OIDC to work
+    permissions:
+      id-token: write   # Allows requesting the JWT from GitHub
+      contents: write   # Allows the bot to update index.html and push to repo
 
     steps:
-      - name: Checkout code
+      - name: 🛰️ Step 1: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 🐍 Step 2: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
-      # Step 1: Check if the JSON is valid (Human Readable)
-      - name: Validate JSON Formatting
+      - name: 🔍 Step 3: Validate & Minify JSON
         run: |
-          python -m json.tool "My Design System/Full color token system/tokens.json"
+          # Robust search for the file regardless of spaces in folder names
+          TARGET_FILE=$(find . -iname "tokens.json" | head -n 1)
+          
+          if [ -z "$TARGET_FILE" ]; then
+            echo "❌ Error: Could not find tokens.json!"
+            exit 1
+          fi
+          
+          # Validate format
+          python -m json.tool "$TARGET_FILE"
+          
+          # Generate minified version in the root for speed
+          python -c "import json; data=json.load(open('$TARGET_FILE')); json.dump(data, open('tokens.min.json', 'w'), separators=(',', ':'))"
+          echo "TARGET_PATH=$TARGET_FILE" >> $GITHUB_ENV
 
-      # Step 2: Create a tiny version (Minified)
-      - name: Minify JSON
+      - name: 🔐 Step 4: AWS Authentication (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Use the full ARN to avoid the 'Source Account ID' error
+          role-to-assume: arn:aws:iam::249746593588:role/DesignSystemStack-CustomS3AutoDeleteObjectsCustomRe-wK8fy5Wb6uJl
+          aws-region: us-east-1
+
+      - name: 🚀 Step 5: Sync to S3
         run: |
-          python -c "import json; \
-          data = json.load(open('My Design System/Full color token system/tokens.json')); \
-          json.dump(data, open('My Design System/Full color token system/tokens.min.json', 'w'), separators=(',', ':'))"
+          # Pushes both the human-readable and the minified version to AWS
+          aws s3 cp "${{ env.TARGET_PATH }}" s3://designsystemstack-designsystembucket5acc6a0c-rnswnyj3sv4f/tokens.json
+          aws s3 cp tokens.min.json s3://designsystemstack-designsystembucket5acc6a0c-rnswnyj3sv4f/tokens.min.json
 
-      # Step 3: Upload the small file so you can download it
-      - name: Upload Minified Tokens
+      - name: 📦 Step 6: Upload Artifact (For Debugging)
         uses: actions/upload-artifact@v4
         with:
           name: design-tokens-minified
-          path: "My Design System/Full color token system/tokens.min.json"
+          path: tokens.min.json
