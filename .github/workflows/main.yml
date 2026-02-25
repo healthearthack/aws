@@ -1,0 +1,28 @@
+name: Validate Design Tokens
+
+# 1. When should this run?
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 2. Get your code from GitHub onto the runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 3. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # 4. Run the JSON tool (Handling those tricky spaces)
+      - name: Validate JSON Formatting
+        run: |
+          python -m json.tool "My Design System/Full color token system/tokens.json"
