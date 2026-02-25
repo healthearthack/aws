@@ -1,10 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Heal The Art – System Health Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+        }
+        a {
+            color: #0077ff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
 <body>
     <h1>Heal The Art: System Health</h1>
-    <p>Security: {{SEC_AUDIT}}</p>
-    <p>HR Audit: {{HR_AUDIT}}</p>
-    <p>Legal Status: {{LEGAL_AUDIT}}</p>
-    <p>Last Update: {{LAST_RUN}}</p>
+
+    <div class="card">
+        <p><span class="label">Security:</span> {{SEC_AUDIT}}</p>
+        <p><span class="label">HR Audit:</span> {{HR_AUDIT}}</p>
+        <p><span class="label">Legal Status:</span> {{LEGAL_AUDIT}}</p>
+        <p><span class="label">Last Update:</span> {{LAST_RUN}}</p>
+    </div>
+
+    <div class="footer">
+        <p>Explore the Magic2U Component Library:</p>
+        <p><a href="magic2u-design-system-showcase.html">Open Component Catalog →</a></p>
+    </div>
 </body>
 </html>
