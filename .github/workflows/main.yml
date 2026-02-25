@@ -11,6 +11,7 @@ permissions:
 jobs:
   heal-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: 🛰️ Step 1: Checkout Repository
         uses: actions/checkout@v4
@@ -22,19 +23,15 @@ jobs:
 
       - name: 🔍 Step 3: Find, Validate & Audit
         run: |
-          # DYNAMIC SEARCH: Find tokens.json even with spaces in folders
           TARGET_FILE=$(find . -iname "tokens.json" | head -n 1)
           if [ -z "$TARGET_FILE" ]; then echo "❌ tokens.json not found"; exit 1; fi
-          
-          # Validation
+
           python -m json.tool "$TARGET_FILE"
-          
-          # Simple Security/HR/Legal Audit
-          if grep -qE "AKIA[0-9A-Z]{16}" "$TARGET_FILE"; then SEC="❌ FAIL"; else SEC="✅ OK"; fi
-          if grep -qiE "master|slave" "$TARGET_FILE"; then HR="⚠️ WARN"; else HR="✅ OK"; fi
-          [ -f "LICENSE" ] && LEG="✅ OK" || LEG="❌ FAIL"
-          
-          # Store results for the Dashboard
+
+          if grep -qE "AKIA[0-9A-Z]{16}" "$TARGET_FILE"; then SEC="FAIL"; else SEC="OK"; fi
+          if grep -qiE "master|slave" "$TARGET_FILE"; then HR="WARN"; else HR="OK"; fi
+          [ -f "LICENSE" ] && LEG="OK" || LEG="FAIL"
+
           echo "SEC_RES=$SEC" >> $GITHUB_ENV
           echo "HR_RES=$HR" >> $GITHUB_ENV
           echo "LEG_RES=$LEG" >> $GITHUB_ENV
@@ -42,11 +39,10 @@ jobs:
 
       - name: 🖥️ Step 4: Update index.html Dashboard
         run: |
-          # This 'Heals' the index.html by replacing placeholders
-          sed -i "s/{{SEC_AUDIT}}/${{ env.SEC_RES }}/g" index.html
-          sed -i "s/{{HR_AUDIT}}/${{ env.HR_RES }}/g" index.html
-          sed -i "s/{{LEGAL_AUDIT}}/${{ env.LEG_RES }}/g" index.html
-          sed -i "s/{{LAST_RUN}}/$(date)/g" index.html
+          sed -i "s/{{SEC_AUDIT}}/${SEC_RES}/g" index.html
+          sed -i "s/{{HR_AUDIT}}/${HR_RES}/g" index.html
+          sed -i "s/{{LEGAL_AUDIT}}/${LEG_RES}/g" index.html
+          sed -i "s/{{LAST_RUN}}/$(date '+%Y-%m-%d %H:%M:%S')/g" index.html
 
       - name: 🔐 Step 5: AWS Authentication (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -57,18 +53,27 @@ jobs:
 
       - name: 🚀 Step 6: Minify & Sync to S3
         run: |
-          # Generate tokens.min.json
-          python -c "import json; data=json.load(open('${{ env.FINAL_PATH }}')); json.dump(data, open('tokens.min.json', 'w'), separators=(',', ':'))"
-          
-          # Sync everything to S3
-          aws s3 cp "${{ env.FINAL_PATH }}" s3://designsystemstack-designsystembucket5acc6a0c-rnswnyj3sv4f/tokens.json
-          aws s3 cp tokens.min.json s3://designsystemstack-designsystembucket5acc6a0c-rnswnyj3sv4f/tokens.min.json
-          aws s3 cp index.html s3://designsystemstack-designsystembucket5acc6a0c-rnswnyj3sv4f/index.html
+          python - <<EOF
+import json
+data=json.load(open("${FINAL_PATH}"))
+json.dump(data, open("tokens.min.json","w"), separators=(",",":"))
+EOF
 
-      - name: 🔄 Step 7: Push Dashboard Update back to Git
+          BUCKET="designsystemstack-designsystembucket5acc6a0c-rnswnyj3sv4f"
+
+          aws s3 cp "${FINAL_PATH}" s3://$BUCKET/tokens.json
+          aws s3 cp tokens.min.json s3://$BUCKET/tokens.min.json
+          aws s3 cp index.html s3://$BUCKET/index.html
+
+      - name: 🔄 Step 7: Commit Dashboard Update (only if changed)
         run: |
           git config --global user.name 'AI-Auditor'
           git config --global user.email 'actions@github.com'
+
           git add index.html
-          git commit -m '🤖 AI Dashboard Sync: Healed Architecture' || echo 'No changes'
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m '🤖 AI Dashboard Sync: Healed Architecture'
+            git push
+          else
+            echo "No changes to commit"
+          fi
