@@ -1,51 +1,39 @@
-<html lang="en" data-theme="astral"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
-    <title>Home Base | Healthearthack Hub</title>
-    <link rel="stylesheet" href="/shared/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthEarthHack | AI System Audit</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #eee; padding: 2rem; }
+        .card { background: #2a2a2a; border-radius: 8px; padding: 20px; border-left: 5px solid #4CAF50; margin-bottom: 10px; }
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        h1 { color: #00ffcc; }
+        .timestamp { color: #888; font-size: 0.8rem; }
+    </style>
 </head>
 <body>
-    <div id="nav-container"><div class="logo"><span class="t-health">Health</span><span class="t-earth">earth</span><span class="t-ack">ack</span><span class="ack-purple">*</span> Hub</div><div class="ack-signature"><span class="ack-purple">A</span>|ndrew <span class="ack-purple">C</span>|harles <span class="ack-purple">K</span>|ieckhefer</div><span class="tagline-large">HEAL THE ART HACK</span><div class="theme-toggle-group"><button class="theme-btn" onclick="setTheme('light')" title="Light Mode"><div class="icon-sun"></div></button><button class="theme-btn" onclick="setTheme('default')" title="Dark Mode"><div class="icon-moon"></div></button><button class="theme-btn" onclick="setTheme('astral')" title="Astral Mode"><div class="icon-astral"></div></button></div><div class="nav-links" style="margin-top: 25px;"><a href="/"><div class="home-icon-wrapper"><div class="door-frame"></div><div class="door-leaf"></div></div>HOME BASE</a><a href="/apps/Magic2U-Design-System"><div class="wand-wrapper"><div class="wand-stick"></div><div class="wand-tip"></div></div>Magic2U Design System</a><a href="/apps/Coinsextra"><div class="coin-stack"><div class="coin-primary">C</div><div class="coin-secondary">C</div></div>Coinsextra Ledger</a><a href="/apps/Architex-pect-O/"><div class="architex-wrapper"><div class="compass-pivot"></div><div class="compass-leg leg-left"></div><div class="compass-leg leg-right"></div></div>Architex PectO</a><a href="/apps/Bit-of-Business-OS"><div class="briefcase-stack"><div class="case-main"></div><div class="case-mini"></div></div>Bit-of-Business-OS</a><a href="/apps/MLucid-Dre"><div class="dream-wrapper"><div class="dream-bubble"></div><div class="machine-node"></div></div>MLucid Dre-</a><a href="/apps/We-at-hero-intel"><div class="hero-wrapper"><div class="vortex"><div class="wind-streak"></div><div class="wind-streak streak-2"></div><div class="wind-streak streak-3"></div></div><div class="leaf"></div></div>Weather-o-Intel</a><hr style="border:0; border-top:1px solid #333; margin: 15px 0;"><a href="/system/logs" style="font-size: 0.7rem;"><div class="search-icon-wrapper"><div class="search-lens"></div><div class="search-handle"></div></div>Shadow Trail</a></div></div>
-    
-    <div class="main-content">
-        <div class="logo">
-            <span class="t-health">Health</span><span class="t-earth">earth</span><span class="t-ack">ack</span><span class="ack-purple">*</span> Hub
-        </div>
-        <div class="ack-signature">
-            <span class="ack-purple">A</span>|ndrew <span class="ack-purple">C</span>|harles <span class="ack-purple">K</span>|ieckhefer
-        </div>
-        <div class="tagline-large" style="margin-bottom: 30px;">HEAL THE ART HACK</div>
-        
-        <div class="node-header">
-            <div class="node-path">[ NODE ACTIVE: /HOME-BASE ]</div>
-            <h1 class="node-title">HOME BASE</h1>
-        </div>
+    <h1>🛰️ AI Improvement Loop: Real-Time Audit</h1>
+    <p class="timestamp">System Last Scanned: {{LAST_RUN}}</p>
 
-        <div class="map-container">
-            <img class="satellite-frame" referrerpolicy="no-referrer" src="https://www.star.nesdis.noaa.gov/goes/data/sat/G19/ABI/CONUS/GeoColor/1250x750.jpg" alt="GOES-19 West CONUS GeoColor">
-            <div style="font-family: monospace; font-size: 0.7rem; color: var(--accent); margin-top: 10px; opacity: 0.6;">
-                ENVIRONMENTAL TELEMETRY // GOES-19 // CONUS WEST
-            </div>
+    <div class="status-grid">
+        <div class="card">
+            <h3>🔒 Security Audit</h3>
+            <p>{{SEC_AUDIT}}</p>
+        </div>
+        <div class="card">
+            <h3>🤝 HR & Inclusivity</h3>
+            <p>{{HR_AUDIT}}</p>
+        </div>
+        <div class="card">
+            <h3>⚖️ Legal Framework</h3>
+            <p>{{LEGAL_AUDIT}}</p>
         </div>
     </div>
 
-    <script src="/shared/nav.js"></script>
-
-
-
-<script>mendeleyWebImporter = {
-  downloadPdfs(e,t) { return this._call('downloadPdfs', [e,t]); },
-  open() { return this._call('open', []); },
-  setLoginToken(e) { return this._call('setLoginToken', [e]); },
-  _call(methodName, methodArgs) {
-    const id = Math.random();
-    window.postMessage({ id, token: '0.5670617594712721', methodName, methodArgs }, 'http://localhost:8000');
-    return new Promise(resolve => {
-      const listener = window.addEventListener('message', event => {
-        const data = event.data;
-        if (typeof data !== 'object' || !('result' in data) || data.id !== id) return;
-        window.removeEventListener('message', listener);
-        resolve(data.result);
-      });
-    });
-  }
-};</script></body></html>
+    <div class="card" style="border-color: #00bcff;">
+        <h3>🚀 Production Build</h3>
+        <p>File: <code>tokens.min.json</code> is ready for AWS deployment.</p>
+    </div>
+</body>
+</html>
