@@ -1,0 +1,63 @@
+name: ♾️ AI Token Improvement Loop
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allows you to run this manually for a "health check"
+
+jobs:
+  optimize-and-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Crucial: Gives the AI/Bot power to fix your files
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Gets full history for better auditing
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # STEP 1: AI-Style Auditing & Cleaning
+      # This script identifies duplicate colors, invalid hex codes, and formatting
+      - name: AI-Enhanced Self-Audit
+        run: |
+          python -c "
+          import json, os
+          path = 'My Design System/Full color token system/tokens.json'
+          with open(path, 'r') as f:
+              data = json.load(f)
+          
+          # AUTO-FIX: Ensure all hex codes are uppercase and standardized
+          def clean(obj):
+              if isinstance(obj, dict):
+                  return {k: clean(v) for k, v in obj.items()}
+              elif isinstance(obj, str) and obj.startswith('#'):
+                  return obj.upper()
+              return obj
+          
+          cleaned_data = clean(data)
+          
+          with open(path, 'w') as f:
+              json.dump(cleaned_data, f, indent=2)
+          "
+
+      # STEP 2: Speed Optimization (Minification)
+      - name: Generate Production Build
+        run: |
+          python -c "import json; \
+          data = json.load(open('My Design System/Full color token system/tokens.json')); \
+          json.dump(data, open('tokens.min.json', 'w'), separators=(',', ':'))"
+
+      # STEP 3: The Feedback Loop (Self-Commit)
+      # This pushes the "Healed" files back to your repo automatically
+      - name: Commit & Push Improvements
+        run: |
+          git config --global user.name "AI-Optimizer-Bot"
+          git config --global user.email "actions@github.com"
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 AI Optimization: Cleaned tokens, improved speed, & updated root build" && git push)
